@@ -20,6 +20,7 @@ export class CreateTaskDto {
   @IsString()
   @MinLength(3)
   @MaxLength(100)
+  @IsSlug()
   title: string;
 
   @IsString()
