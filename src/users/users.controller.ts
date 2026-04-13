@@ -19,6 +19,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   ParseIntPipe,
   HttpCode,
   HttpStatus, } from '@nestjs/common';
@@ -26,19 +27,30 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { TasksService } from 'src/tasks/tasks.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private tasksService: TasksService) {}
 
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
+  @Get('search')
+  findByEmail(@Query('email') email?: string) {
+    return this.usersService.findByEmail(email);
+  }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
+  }
+
+  @Get(':id/tasks')
+  getUserTasks(@Param('id') id: string) {
+    const user = this.usersService.findOne(+id);
+    return this.tasksService.findTasksByUserName(user.name);
   }
 
   @Post()

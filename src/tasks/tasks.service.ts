@@ -20,7 +20,10 @@ export class TasksService {
   ];
   private nextId = 4;
 
-  findAll(): Task[] {
+  findAll(status?: string): Task[] {
+    if (status) {
+      return this.tasks.filter((t) => t.status === status);
+    }
     return this.tasks;
   }
 
@@ -28,6 +31,12 @@ export class TasksService {
     const task = this.tasks.find((t) => t.id === id);
     if (!task) throw new NotFoundException(`Task #${id} not found`);
     return task;
+  }
+  
+  findTasksByUserName(name: string) {
+    return this.tasks.filter(task =>
+      task.title.toLowerCase().startsWith(name.toLowerCase())
+    );
   }
 
   create(dto: CreateTaskDto): Task {

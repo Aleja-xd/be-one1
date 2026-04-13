@@ -24,6 +24,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Query,
 }  from '@nestjs/common';
 
 import { TasksService } from './tasks.service';
@@ -36,8 +37,8 @@ export class TasksController {
 
   // TODO: GET /tasks
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@Query('status') status?: string) {
+    return this.tasksService.findAll(status);
   }
 
   // TODO: GET /tasks/:id

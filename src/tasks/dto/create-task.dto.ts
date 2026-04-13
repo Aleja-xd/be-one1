@@ -14,6 +14,7 @@ import { IsOptional, MaxLength, MinLength, IsString, IsEnum } from "class-valida
 
 const TaskStatus = ['pending', 'in-progress', 'done'] as const;
 type TaskStatus = (typeof TaskStatus)[number];
+import { IsSlug } from './is-slug.decorator';
 
 export class CreateTaskDto {
   @IsString()

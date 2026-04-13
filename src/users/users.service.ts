@@ -19,7 +19,7 @@
 //   }
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -44,14 +44,26 @@ export class UsersService {
     findAll(): User[] {
       return this.users;
     }
+    
+    findByEmail(email: string) {
+      const user = this.users.find(u => u.email === email);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    }
   
     findOne(id: number): User {
       const user = this.users.find((t) => t.id === id);
-      if (!user) throw new NotFoundException(`Task #${id} not found`);
+      if (!user) throw new NotFoundException(`User #${id} not found`);
       return user;
     }
   
     create(dto: CreateUserDto): User {
+      const exists = this.users.find((u) => u.email === dto.email);
+      if (exists) {
+        throw new ConflictException('Email already registered');
+      }
       const user: User = {
         id: this.nextId++,
         name: dto.name,
@@ -65,6 +77,12 @@ export class UsersService {
   
     update(id: number, dto: UpdateUserDto): User {
       const user = this.findOne(id);
+      if (dto.email && dto.email !== user.email) {
+        const exists = this.users.find((u) => u.email === dto.email);
+        if (exists) {
+          throw new ConflictException('Email already registered');
+        }
+      }
       Object.assign(user, dto);
       return user;
     }
